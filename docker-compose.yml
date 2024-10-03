@@ -10,8 +10,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-    command: npm run dev
+      - NODE_ENV=production  # For production
+      - DATABASE_URL=${DATABASE_URL}  # Add this for connecting to Railway's MySQL
+    command: npm run build && npm run start
     networks:
       - app-network
 
@@ -22,32 +23,8 @@ services:
       - ./php-api:/var/www/html
     ports:
       - "8080:80"
-    networks:
-      - app-network
-
-  mysql:
-    image: mysql:8.0
-    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: chatapp
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - "8081:80"
-    environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: rootpassword
+      - MYSQL_URL=${DATABASE_URL}  # Connect to Railway's MySQL
     networks:
       - app-network
 
@@ -66,10 +43,3 @@ services:
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  mysql-data:
-
-
-
-
